@@ -38,6 +38,7 @@ describe('SDET Challenge', async () => {
             console.log(`Optimal solution is 0 weighings when you cheat. The answer is ${number}.`);
             await SdetChallenge.selectAnswer(cheatSelector);
         } else {
+            console.log('I can\'t cheat. Time to brute force my way out of this one.');
             const newValue = await SdetChallenge.bruitForce();
             await SdetChallenge.selectAnswer(cheatSelector + newValue);
             await cheatUtil.writeFile(cheatSelector + newValue);
