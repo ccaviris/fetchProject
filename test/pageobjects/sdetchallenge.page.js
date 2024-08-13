@@ -214,7 +214,7 @@ class SdetChallenge extends Page {
     * If an element if found by the cheatSelector, it will return true. Otherwise, it will return false.
     *  @param cheatSelector  A selector used for cheating ;)
     */
-    canWeCheat(cheatSelector){
+    async canWeCheat(cheatSelector){
         const coin = await $(cheatSelector);
         return await coin.isExisting();
     }
