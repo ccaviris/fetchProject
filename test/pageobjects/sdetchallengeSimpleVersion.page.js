@@ -1,4 +1,3 @@
-const { $ } = require('@wdio/globals')
 const Page = require('./page');
 
 const leftBowlSelectors = ['#left_0', '#left_1', '#left_2'];
