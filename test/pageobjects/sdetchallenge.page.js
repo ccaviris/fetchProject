@@ -90,6 +90,11 @@ class SdetChallenge extends Page {
         *  groupA and groupB will get one additional coin.
         */
         const groupSize = Math.round(coinIds.length/3);
+        //Note: If the spaces in the bowls is less than groupSize, the automation will throw an error 
+        //at a later time. One optimization would be to look up how many spaces are in the left bowl
+        //and right bowl and then use the smallest of the three numbers (groupSize, squares in the left bowl
+        // and squares in the right bowl.  Making this change would result in the logic that prints the numebr
+        //of steps to be innacurate when the bowl size is the limitng factor. 
 
         const groups = {};
         groups.groupA = coinIds.splice(0, groupSize);
@@ -131,7 +136,7 @@ class SdetChallenge extends Page {
     }
 
     /**
-    * Places a set of coins in a given cup
+    * Places a set of coins in a given bowl
     * @param bowlContents An array of string values to be typed into the squares of a given bowl
     * @param bowlSelector A selector that can be used to find all of the squares of a given bowl.
     */
