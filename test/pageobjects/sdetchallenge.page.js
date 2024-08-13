@@ -9,7 +9,12 @@ const Page = require('./page');
 
 class SdetChallenge extends Page {
 
-
+    /**
+    * This returns an array of strings containing all of the id's for the coins on the page
+    * @param logROundsNeeded If true, this function will also calculate and print to the conole 
+    *                        an estimate of how many weighings will be needed for an optimal solution.
+    *                        If false, it will not. Default value is true
+    */
     async getCoinIds(logRoundsNeeded = true){
         const coins = await $$('.coins button');
         const numberOfCoins = coins.length;
@@ -33,6 +38,10 @@ class SdetChallenge extends Page {
         return coinIds;
     }
 
+    /**
+    * Takes in a selector for a coin and returns the coin's number
+    * @param coinSelector The selector for the coin who's number is to be read
+    */
     async getCoinNumber(coinSelector){
         //I don't want to assume that the coin's ID will always correlate to the coin's number
         // so I will dynamically look it up every time.
@@ -41,6 +50,12 @@ class SdetChallenge extends Page {
         return coinNumber;
     }
 
+    /**
+    * Takes in an array of IDs for coin elements and recursively attempts to find the fake.
+    * It could take in the full set of coin IDs or any other subset that is known to include
+    * the fake coin.
+    * @param coinIds An array of IDs for coin elements with one of them being the fake coin
+    */
     async recursivelyGroupAndCompareCoins(coinIds){
         if(coinIds.length == 1){
             console.log(`The answer is ${coinIds[0]}`);
@@ -77,16 +92,23 @@ class SdetChallenge extends Page {
         return groups;
     }
 
+    /**
+    * Takes in a three way division of coins. The coins to be on the left bowl, right bowl, and not placed.
+    * It will place the coins, weigh them, and return a =, <, or, > to summarize the results as follows:
+    *           = if the fake coin is in the last third of the coins as divided by groupCoins()
+    *           > if the fake coin is in the middle third of the coins as divided by groupCoins()
+    *           < if the fake coin is in the first third of the coins as divided by groupCoins()
+    * @param leftBowlContents An array of IDs for coin elements to be placed on the left bowl
+    * @param rightBowlContents An array of IDs for coin elements to be placed on the left bowl
+    * @param unisedContents An array of IDs for coin elements not to be placed in either bowl
+    */
     async comparison(leftBowlContents, rightBowlContents, unisedContents){
 
         const leftBowlSquaresSelector = '.square[data-side="left"]';
         const rightBowlSquaresSelector = '.square[data-side="right"]';
 
-        //TODO abort if this returns false
         await this.fillBowl(leftBowlContents, leftBowlSquaresSelector);
         await this.fillBowl(rightBowlContents, rightBowlSquaresSelector);
-
-
 
         const result = await this.clickWeighAndGetResults();
 
@@ -97,18 +119,24 @@ class SdetChallenge extends Page {
         } else if(result.includes('<')){
             return (leftBowlContents)
         } else{
-            console.log('Something unexpected happened while reading results in the comparison() function. Failing the test.')
+            throw new Error('Something unexpected happened while reading results in the comparison() function. Failing the test.')
         }
     }
 
+    /**
+    * Places a set of coins in a given cup
+    * @param bowlContents An array of string values to be typed into the squares in a given bowl
+    * @param bowlSelector A selector that can be used to find all of the squares of a given bowl.
+    */
     async fillBowl(bowlContents, bowlSelector){
         const bowlSquares = await $$(bowlSelector);
 
         //If the bowl doesn't have enough squares to complete the game in the 
-        //optimal number of moves then , the task will abort and fail the test
+        //optimal number of moves then , throw an error and fail the test
+        //Note, at the expense of more complex test logic it is possible 
+        //for the test to have coninued instead of throwing an error here
         if(bowlSquares.length < bowlContents.length){
-            console.log("Uh oh, we're going to need a bigger scale for the number of coins we need to compare!");
-            return false;
+            throw new Error('Uh oh, we\'re going to need a bigger scale for the number of coins we need to compare!');
         }
         
         let index = 0;
@@ -117,24 +145,28 @@ class SdetChallenge extends Page {
             await bowlSquares[index].setValue(coinNumber);
             index++;
         }
-        return true;
     }
 
+    /**
+    * Click the reset button
+    */
     async clickReset(){
         const resetButton = await $('div:nth-child(4) #reset');
         return await resetButton.click();
     }
 
+    /**
+    *  This function will read the info text, press the reset weigh, wait for the info text to update
+    *  then it will return only the new text that was added after pressing the weigh button.
+    */
     async clickWeighAndGetResults(){
         const beforeText = await this.getGameInfoText();
         let newText = beforeText;
         const weighButton = await $('#weigh');
         await weighButton.click();
         await browser.waitUntil(async function () {
-            //TODO: Clean this up
             const gameInfo = await $('.game-info ol');
             newText = await gameInfo.getText();
-            //const newText = await this.getGameInfoText();
             return newText != beforeText;
         }, {
             timeout: 10000,
@@ -149,6 +181,9 @@ class SdetChallenge extends Page {
         return resultText;
     }
 
+    /**
+    *  This function will read the info text.
+    */
     async getGameInfoText(){
         const gameInfo = await $('.game-info ol');
         const gameInfoText = await gameInfo.getText();
@@ -156,6 +191,10 @@ class SdetChallenge extends Page {
         return gameInfoText;
     }
 
+    /**
+    * Click on the coin that is expected to be the correct answer
+    * @param coinSelector  A selector for the coin to be clicked on
+    */
     async selectAnswer(coinSelector){
         console.log(`Selecting the solution ${coinSelector}....wish me luck!`)
         const coin = await $(`#${coinSelector}`);
@@ -171,18 +210,24 @@ class SdetChallenge extends Page {
         }
     }
 
+    /**
+    * This function will use brute force to find the correct answer, trial and error guessing each coin.
+    * When it finds the answer, it will return the data-value to be used for cheating. The returned value
+    * is formatted to be appended to the end of an existing selector.
+    */
     async bruitForce(){
         const coins = await this.getCoinIds(false);
         for(const coinSelector of coins){
             try {
                 await this.selectAnswer(coinSelector);
-
-                //return coinSelector;
                 const coin = await $(`#${coinSelector}`);
                 const value = await coin.getAttribute('data-value');
 
                 console.log(`We found a new cheat code: ${value}`);
 
+                //This is formatted funny because it will be added to an existing selector
+                //This has the effect of selecting elements that meet any of the criteria.
+                //Think of the comma as an "or"
                 return `, button[data-value="${value}"]`;
   
               } catch (error) {
@@ -191,6 +236,9 @@ class SdetChallenge extends Page {
         }
     }
 
+    /**
+    * Open the page.
+    */
     async open () {
         await super.open('');
     }
