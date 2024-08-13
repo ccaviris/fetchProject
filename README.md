@@ -3,7 +3,7 @@
 Instructions:
 1. Clone this repository
 2. From the root folder of this project, run the command `npm install`
-3. To run the tests, execute the command `npx wdio run ./wdio.conf.js`
+3. To run the tests, execute the command `npx wdio run ./wdio.conf.js` This will execute three different strategies to solve this problem.
 
 Some notes:
 The assingment mentioned gold bars but the page elements referanced coins. I decided to stick to coins instead of bars to keep the selectors and the variable names consistent.
