@@ -8,8 +8,8 @@ Instructions:
 Some notes:
 The assingment mentioned gold bars but the page elements referanced coins. I decided to stick to coins instead of bars to keep the selectors and the variable names consistent.
 
-I took three aproatches to this assignment. They are executed through the folder `test/specs/weightGame.js`
-To run any of the aproatches individually, you may modify the file by adding `.only`. For example, to only tun the frst test, the line:
+I took three aproatches to this assignment. They are executed through the file `test/specs/weightGame.js`
+To run any of the aproatches individually, you may modify the file by adding `.only`. For example, to only run the frst test, the line:
 `it('should complete an optimal solution for 9 coins', async () => {`
 could be changed to:
 `it.only('should complete an optimal solution for 9 coins', async () => {`
