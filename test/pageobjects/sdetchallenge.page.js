@@ -211,6 +211,15 @@ class SdetChallenge extends Page {
     }
 
     /**
+    * If an element if found by the cheatSelector, it will return true. Otherwise, it will return false.
+    *  @param cheatSelector  A selector used for cheating ;)
+    */
+    canWeCheat(cheatSelector){
+        const coin = await $(cheatSelector);
+        return await coin.isExisting();
+    }
+
+    /**
     * This function will use brute force to find the correct answer, trial and error guessing each coin.
     * When it finds the answer, it will return the data-value to be used for cheating. The returned value
     * is formatted to be appended to the end of an existing selector.
