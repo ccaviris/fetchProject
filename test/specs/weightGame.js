@@ -1,25 +1,34 @@
 const SdetChallenge = require('../pageobjects/sdetchallenge.page');
 const SdetChallengeSimpleVersion = require('../pageobjects/sdetchallengeSimpleVersion.page');
 const cheatUtil = require('../util/cheatUtil.js');
-const cheatFile = require('../../cheatFile.json')
+const cheatFile = require('../../cheatFile.json');
 
 describe('SDET Challenge', async () => {
 
     it('should complete an optimal solution for 9 coins.', async () => {
+        console.log('~~~~~~~~~~ START OF LOGS FOR FIRST SOLUTION ~~~~~~~~~~');
+
         await SdetChallengeSimpleVersion.open();
         const roundOneResult = await SdetChallengeSimpleVersion.roundOne();
         const roundTwoResult = await SdetChallengeSimpleVersion.roundTwo(roundOneResult);
         await SdetChallengeSimpleVersion.selectAnswer(roundTwoResult);
+
+        console.log('~~~~~~~~~~ END OF LOGS FOR FIRST SOLUTION ~~~~~~~~~~');
     })
 
     it('should complete an optimal solution with arbitrarily many coins.', async () => {
+        console.log('~~~~~~~~~~ START OF LOGS FOR SECOND SOLUTION ~~~~~~~~~~');
+
         await SdetChallenge.open();
         const coins = await SdetChallenge.getCoinIds();
         await SdetChallenge.recursivelyGroupAndCompareCoins(coins);
-        
+
+        console.log('~~~~~~~~~~ END OF LOGS FOR SECOND SOLUTION ~~~~~~~~~~');
     })
 
     it('should complete by cheating when able and brute force when not able to cheat.', async () => {
+        console.log('~~~~~~~~~~ START OF LOGS FOR FINAL SOLUTION ~~~~~~~~~~');
+
         cheatSelector = cheatFile.selector;
         await SdetChallenge.open();
         const canWeCheat = await SdetChallenge.canWeCheat(cheatSelector);
@@ -33,6 +42,8 @@ describe('SDET Challenge', async () => {
             await SdetChallenge.selectAnswer(cheatSelector + newValue);
             await cheatUtil.writeFile(cheatSelector + newValue);
         }
+
+        console.log('~~~~~~~~~~ END OF LOGS FOR FINAL SOLUTION ~~~~~~~~~~');
     })
     
 })

@@ -1,7 +1,7 @@
 const Page = require('./page');
 
+//Since only three coins are to be placed in each bowl, no futher bowl selectors are needed.
 const leftBowlSelectors = ['#left_0', '#left_1', '#left_2'];
-
 const rightBowlSelectors = ['#right_0', '#right_1', '#right_2'];
 
 /**
@@ -39,7 +39,8 @@ class SdetChallenge extends Page {
     }
 
     /**
-    * Performs the second round of weighing
+    * Performs the second round of weighing and returns the solutiom in the form of the number
+    * representing the fake coin.
     * @param roundOneResult the output of the function roundOne(). The values can be:
     *                           < means the fake coin is either 0, 1, or 2
     *                           > means the fake coin is either 3, 4, or 5
@@ -50,6 +51,8 @@ class SdetChallenge extends Page {
 
         let roundTwoCoins;
 
+        //First, we look at the result from round one and determin which group may contain the fake coin
+        //and place two of the remaining coins into opposite bowls.
         if(roundOneResult=='<'){
             roundTwoCoins = ['0', '1', '2'];
             console.log('Placing coin 0 into the left bowl');
@@ -75,6 +78,7 @@ class SdetChallenge extends Page {
 
         const result = await this.clickWeighAndGetResults();
 
+        //Now we read the result from the weighing
         if(result.includes('=')){
             return roundTwoCoins[2];
         } else if(result.includes('>')){
@@ -101,7 +105,7 @@ class SdetChallenge extends Page {
         }
     }
 
-    //This is similar but not identical to a function in sdetchallenge.pasge.js
+    //This is similar but not identical to a function of the same name in sdetchallenge.pasge.js
     /**
     * Click on the coin that is expected to be the correct answer
     * @param number  The number representing the fake coin
@@ -120,9 +124,9 @@ class SdetChallenge extends Page {
     }
 
 
-    //The functions below this comment are redundant to the sdetchallenge.page.js
+    //The functions below this comment are identical to ones sdetchallenge.page.js
     //Normally, I would not copy/paste my own code. However, since I am doing the
-    //same tast with two different aproatches, I wanted to keep these completely seperate
+    //same tast with different aproatches, I wanted to keep these completely seperate
 
     /**
     * Click the reset button
